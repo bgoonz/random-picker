@@ -1,0 +1,87 @@
+<!doctype html>
+<html class="h-100" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="A simple tool to pick a random stock for you">
+    <meta name="author" content="">
+    <meta name="theme-color" content="#007bff">
+    <link rel="icon" href="favicon.ico">
+    <title>Random Stock Picker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49223760-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'UA-49223760-7');
+    </script>
+  </head>
+
+  <body class="h-100">
+    <div class="container h-100 justify-content-center">
+      <div class="row h-100 card-deck text-center justify-content-center align-items-center">
+        <div class="col-lg-4">
+          <div class="card box-shadow">
+            <div class="card-header">
+              <h4 class="my-0 font-weight-normal">Random Stock Picker</h4>
+            </div>
+            <div class="card-body">
+              <h1 id="ticker" class="card-title pricing-card-title">Loading...</h1>
+              <a id="robinhood" target="_blank" rel="noopener" href="#">Robinhood</a> |
+              <a id="yahoo" target="_blank" rel="noopener" href="#">Yahoo</a>
+              <hr>
+              <input type="button" class="btn btn-lg btn-primary btn-block" id="refresh" value="Refresh" onclick="newStock()">
+            </div>
+          </div>
+        </div>
+        <span id="foot">
+          <small class="col-lg-12 text-center white">Made by
+            <a class="white font-italic" href="https://github.com/RayBB/random-stock-picker">RayBB</a>
+          </small>
+        </span>
+      </div>
+    </div>
+    <script>
+
+    let stocks = []
+    fetch('./stocks.json')
+    .then(res => res.json())
+    .then((out) => {
+      stocks = out;
+      newStock();
+    })
+    .catch(err => { throw err });
+    
+      let curStock = "";
+      newStock();
+      document.querySelector("#yahoo").addEventListener('click', () => gtag('event', 'Yahoo', { 'event_category': 'Open', 'event_label': curStock, }));
+      document.querySelector("#robinhood").addEventListener('click', () => gtag('event', 'Robinhood', { 'event_category': 'Open', 'event_label': curStock, }));
+      document.querySelector("#refresh").addEventListener('click', () => gtag('event', 'refresh', { 'event_category': 'Stock', 'event_label': curStock, }));
+      gtag('event', 'load', { 'event_category': 'Stock', 'event_label': curStock, });
+
+      function newStock() {
+        let random = Math.floor(Math.random() * Math.floor(stocks.length));
+        curStock = stocks[random];
+        document.querySelector("#ticker").innerText = curStock;
+        document.querySelector("#robinhood").href = "https://robinhood.com/stocks/" + curStock;
+        document.querySelector("#yahoo").href = "https://finance.yahoo.com/quote/" + curStock;
+      }
+    </script>
+    
+    <script async data-id="47d084fb-baae-430b-ac66-d12ffee40c85" src="https://tinyads.io/e"></script>
+
+    <style>
+    body {
+      background-color: darkslategrey;
+    }
+    #foot{
+      position: absolute; bottom: 10px
+    }
+    .white{
+      color: white!important;
+    }
+    </style>
+  </body>
+</html>
